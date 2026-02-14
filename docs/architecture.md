@@ -8,6 +8,8 @@
 event-log.ts (factory)
 ├── storage/database.ts        Dexie schema + conversion
 ├── storage/event-writer.ts    Append-only writes + hash chain
+│   ├── hash-chain/hash.ts     SHA-256 via Web Crypto
+│   └── hash-chain/chain.ts    Chain linking + validation
 ├── storage/budget.ts          Storage usage tracking
 ├── storage/compaction.ts      Snapshot-based compaction
 ├── queries/query-engine.ts    Cursor-paginated queries
@@ -15,18 +17,19 @@ event-log.ts (factory)
 ├── snapshots/
 │   ├── snapshot-manager.ts    Snapshot creation + auto-snapshot
 │   └── state-reconstructor.ts Replay from snapshot + events
-├── archive/
-│   ├── exporter.ts            Export to .rblogs
-│   └── importer.ts            Import and deduplicate
-├── hash-chain/
-│   ├── hash.ts                SHA-256 via Web Crypto
-│   └── chain.ts               Chain linking + validation
+└── archive/
+    ├── exporter.ts            Export to .rblogs
+    └── importer.ts            Import and deduplicate
+
+Standalone helpers (exported from index.ts, not imported by event-log.ts):
+├── storage/pressure.ts        Storage pressure levels (pure function)
 └── diff/
+    ├── types.ts               AST diff type definitions
     ├── diff-storage.ts        Diff-aware event helpers
     └── diff-reconstructor.ts  Source reconstruction
 ```
 
-Cross-module dependencies are **one-directional**. No module imports from a module that imports from it. The factory (`event-log.ts`) is the only file that pulls together all modules.
+Cross-module dependencies are **one-directional**. No module imports from a module that imports from it. The factory (`event-log.ts`) imports most modules. The `diff/*` and `storage/pressure.ts` modules are standalone — exported directly from `index.ts` without going through the factory.
 
 ## Storage Schema (IndexedDB via Dexie)
 
@@ -56,7 +59,7 @@ The compound indexes `[spaceId+sequenceNumber]` enable efficient range queries s
 ```
 writeEvent(input)
   ├── Validate input fields (type, spaceId, timestamp)
-  ├── Transaction: {
+  ├── Acquire per-space lock (withSpaceLock): {
   │     1. Read latest event for space (by [spaceId+sequenceNumber] desc)
   │     2. Compute sequenceNumber = prev.seq + 1 (or 1 for genesis)
   │     3. Set previousHash = prev.hash (or null for genesis)
@@ -65,11 +68,11 @@ writeEvent(input)
   │     6. Put event into events table
   │   }
   ├── Auto-snapshot check:
-  │     If (seq % snapshotInterval === 0) → createSnapshot()
+  │     If (events since last snapshot >= snapshotInterval) → createSnapshot()
   └── Return Result<Event>
 ```
 
-All writes are transactional — if any step fails, no data is persisted. The hash chain is validated implicitly on every write (step 3 reads the predecessor).
+Writes to the same space are serialized via a per-space JavaScript promise-chain lock (`withSpaceLock` in `event-writer.ts`). This ensures the read-compute-write cycle is atomic per space. Writes to different spaces proceed concurrently with independent chains.
 
 ## Query Path
 
@@ -139,13 +142,9 @@ See [storage-format.md](storage-format.md) for the byte-level `.rblogs` specific
 
 ## Concurrency Model
 
-IndexedDB provides transaction isolation. Dexie wraps IndexedDB transactions with a promise-based API:
-
-- **Writes**: Single-writer per space. The `writeEvent` transaction locks the `events` table for the duration of the read-compute-write cycle. Concurrent writes to the same space are serialized by IndexedDB.
-- **Reads**: Multiple concurrent read transactions are allowed. Queries operate on a consistent snapshot of the database at transaction start time.
-- **Snapshots**: Creating a snapshot reads events and writes a snapshot record within a single transaction.
-
-There is no explicit locking — IndexedDB's transaction isolation handles concurrent access.
+- **Writes**: Serialized per space via an explicit JavaScript promise-chain lock (`spaceLocks` Map + `withSpaceLock` in `event-writer.ts`). Each space has its own lock — writes to different spaces proceed concurrently. The lock ensures the read-chain-state → compute-hash → write-event cycle is atomic per space.
+- **Reads**: Multiple concurrent reads are allowed. Dexie/IndexedDB queries operate on a consistent snapshot of the database.
+- **Snapshots**: Creating a snapshot reads events and writes a snapshot record. Snapshot reads are not locked against writes — the snapshot captures state at read time.
 
 ## Determinism Design
 

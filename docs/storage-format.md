@@ -88,9 +88,11 @@ On import, events with an `id` already present in the database are skipped. The 
 
 Export → import → export produces **byte-identical** archives for the same set of events. This is guaranteed by:
 
-- Deterministic JSON serialization (sorted keys) for the hash
+- Stable property order in serialized events (`toArchiveEvent` always produces fields in the same fixed order)
 - Consistent event ordering (by space + sequence number)
 - Stable compression output for identical input
+
+Note: The archive body uses standard `JSON.stringify` (insertion-order keys), not the sorted-key `deterministicSerialize` used for individual event hashes.
 
 ## Version History
 

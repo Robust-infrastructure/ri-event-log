@@ -58,7 +58,7 @@ src/
 
 | Metric | Value |
 |--------|-------|
-| Public types | 25 |
+| Public types | 26 |
 | EventLog methods | 11 |
 | Error codes | 7 |
 | Event types | 11 |
@@ -257,8 +257,8 @@ A pure function (no database access needed).
 | `NORMAL` | < 50% | No action needed |
 | `COMPACT` | 50–70% | Background compaction |
 | `EXPORT_PROMPT` | 70–80% | Prompt user to export old events |
-| `AGGRESSIVE` | 80–90% | Auto-compact, aggressive snapshots, warn on write |
-| `BLOCKED` | > 90% | Block new space creation until user frees space |
+| `AGGRESSIVE` | 80–90% | Auto-compact, aggressive snapshots |
+| `BLOCKED` | ≥ 90% | Block new space creation until user frees space |
 
 ### CompactionReport
 
