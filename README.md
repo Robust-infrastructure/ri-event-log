@@ -116,6 +116,7 @@ interface EventLog {
   reconstructState(spaceId, atTimestamp?): Promise<Result<unknown>>;
   verifyIntegrity(spaceId?): Promise<Result<IntegrityReport>>;
   createSnapshot(spaceId): Promise<Result<Snapshot>>;
+  compact(spaceId): Promise<Result<CompactionReport>>;
   getStorageUsage(): Promise<Result<StorageReport>>;
   exportArchive(spaceId, beforeDate): Promise<Result<Uint8Array>>;
   importArchive(archive): Promise<Result<ImportReport>>;
@@ -138,7 +139,8 @@ interface EventLog {
 | `DiffPayload` | Structured payload for `space_evolved` events with AST diffs |
 | `SpaceCreatedPayload` | Structured payload for `space_created` genesis events |
 | `ReconstructedSource` | Result of source reconstruction from diffs |
-| `EventLogConfig` | Configuration: database name, snapshot interval, state reducer |
+| `CompactionReport` | Result of snapshot-based compaction |
+| `EventLogConfig` | Configuration: database name, snapshot interval, state reducer, ID generator |
 | `EventLogError` | Discriminated union of 7 error types |
 | `Result<T, E>` | `{ ok: true; value: T } \| { ok: false; error: E }` |
 
@@ -234,6 +236,20 @@ src/
 - Sequence numbers are monotonically increasing per space
 - Genesis event (first event per space) has `previousHash: null`
 - Same events written in same order produce identical hashes (determinism)
+- ID generation is injectable via `idGenerator` for deterministic replay
+
+## Documentation
+
+Detailed documentation in [`docs/`](docs/):
+
+| Document | Description |
+|----------|-------------|
+| [reference.md](docs/reference.md) | Complete API reference — every type, method, and error code |
+| [architecture.md](docs/architecture.md) | Module dependencies, storage schema, write/query/snapshot paths |
+| [hash-chain.md](docs/hash-chain.md) | Deterministic serialization, chain rules, tamper detection |
+| [storage-format.md](docs/storage-format.md) | `.rblogs` binary format byte-level specification |
+| [ast-diff-storage.md](docs/ast-diff-storage.md) | Diff payload schema, reconstruction, storage savings |
+| [integration-guide.md](docs/integration-guide.md) | Consumer guide with examples, error handling, deterministic mode |
 
 ## License
 

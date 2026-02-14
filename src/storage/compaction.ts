@@ -12,6 +12,7 @@ import type { CompactionReport, Result } from '../types.js';
 import type { EventLogDatabase } from './database.js';
 import { createSnapshot } from '../snapshots/snapshot-manager.js';
 import type { StateReducer } from '../snapshots/snapshot-manager.js';
+import { generateUuidV4 } from './event-writer.js';
 
 /**
  * Compact a space by creating a snapshot at the latest event.
@@ -29,6 +30,7 @@ export async function compact(
   db: EventLogDatabase,
   spaceId: string,
   stateReducer: StateReducer,
+  idGenerator: () => string = generateUuidV4,
 ): Promise<Result<CompactionReport>> {
   try {
     // Check how many events exist for this space
@@ -89,7 +91,7 @@ export async function compact(
     }
 
     // Create the snapshot
-    const snapshotResult = await createSnapshot(db, spaceId, stateReducer);
+    const snapshotResult = await createSnapshot(db, spaceId, stateReducer, idGenerator);
     if (!snapshotResult.ok) {
       return snapshotResult;
     }

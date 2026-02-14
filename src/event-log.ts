@@ -17,11 +17,12 @@ import type {
   Snapshot,
   IntegrityReport,
   StorageReport,
+  CompactionReport,
   ImportReport,
   Result,
 } from './types.js';
 import { createDatabase } from './storage/database.js';
-import { writeEvent } from './storage/event-writer.js';
+import { writeEvent, generateUuidV4 } from './storage/event-writer.js';
 import type { WriteEventInput } from './storage/event-writer.js';
 import { queryBySpace, queryByType, queryByTime } from './queries/query-engine.js';
 import { verifyIntegrity } from './integrity/verifier.js';
@@ -30,6 +31,7 @@ import { reconstructState } from './snapshots/state-reconstructor.js';
 import { getStorageUsage } from './storage/budget.js';
 import { exportArchive } from './archive/exporter.js';
 import { importArchive } from './archive/importer.js';
+import { compact } from './storage/compaction.js';
 
 /** Resolved configuration with defaults applied. */
 interface ResolvedConfig {
@@ -39,6 +41,7 @@ interface ResolvedConfig {
   readonly snapshotInterval: number;
   readonly hashAlgorithm: 'SHA-256';
   readonly stateReducer: (state: unknown, event: Event) => unknown;
+  readonly idGenerator: () => string;
 }
 
 /** Default state reducer: last-write-wins (returns event payload). */
@@ -55,6 +58,7 @@ function resolveConfig(config?: EventLogConfig): ResolvedConfig {
     snapshotInterval: config?.snapshotInterval ?? 100,
     hashAlgorithm: config?.hashAlgorithm ?? 'SHA-256',
     stateReducer: config?.stateReducer ?? defaultStateReducer,
+    idGenerator: config?.idGenerator ?? generateUuidV4,
   };
 }
 
@@ -79,13 +83,13 @@ export function createEventLog(config?: EventLogConfig): EventLog {
         version: event.version,
         payload: event.payload,
       };
-      const result = await writeEvent(db, input);
+      const result = await writeEvent(db, input, resolved.idGenerator);
 
       // Auto-snapshot check after successful write
       if (result.ok) {
         const shouldSnap = await shouldAutoSnapshot(db, result.value.spaceId, resolved.snapshotInterval);
         if (shouldSnap) {
-          await createSnapshot(db, result.value.spaceId, resolved.stateReducer);
+          await createSnapshot(db, result.value.spaceId, resolved.stateReducer, resolved.idGenerator);
         }
       }
 
@@ -134,7 +138,11 @@ export function createEventLog(config?: EventLogConfig): EventLog {
     // --- Snapshots (M6) ---
 
     createSnapshot(spaceId: string): Promise<Result<Snapshot>> {
-      return createSnapshot(db, spaceId, resolved.stateReducer);
+      return createSnapshot(db, spaceId, resolved.stateReducer, resolved.idGenerator);
+    },
+
+    compact(spaceId: string): Promise<Result<CompactionReport>> {
+      return compact(db, spaceId, resolved.stateReducer, resolved.idGenerator);
     },
 
     // --- Storage (M7) ---

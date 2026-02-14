@@ -511,3 +511,53 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 - [x] Zero `TODO`/`FIXME` comments in source code
 - [x] Ready for `npm publish` and consumption by external callers
 - [x] Tag `v1.0.0`
+
+---
+
+## Post-M10: v1.0.0 Finalization (Status: COMPLETE ✅)
+
+**Goal**: Address code-review findings, enforce determinism guarantees, expose missing API surface, and add comprehensive documentation.
+
+**Depends on**: M10
+
+### Findings
+
+Deep analysis of the codebase against the original specification identified:
+
+1. **Three determinism violations** — `Date.now()` in snapshot timestamps, `crypto.randomUUID()` in snapshot IDs, and event IDs using a non-injectable generator
+2. **Missing `compact()` on EventLog interface** — `compact()` existed as an internal function but was not wired into the public interface
+3. **Version mismatch** — `package.json` was still at `0.1.0` while README claimed `v1.0.0`
+4. **No reference documentation** — API was documented in README but lacked detailed `docs/` directory
+
+### Code Fixes
+
+- [x] Add `idGenerator` field to `EventLogConfig` — injectable ID generator for events and snapshots (default: `crypto.randomUUID()`)
+- [x] Add `idGenerator` parameter to `writeEvent`, `createSnapshot`, and `compact` — optional with default, backward-compatible
+- [x] Derive snapshot timestamps from last included event's timestamp instead of `new Date().toISOString()` — eliminates non-deterministic time dependency
+- [x] Replace `crypto.randomUUID()` in snapshot creation with `idGenerator()` — all IDs now use the injectable generator
+- [x] Export `generateUuidV4` from `event-writer.ts` for use as the default generator
+- [x] Add `compact(spaceId)` to the `EventLog` interface in `types.ts` and wire it in `event-log.ts`
+- [x] Bump `package.json` version from `0.1.0` to `1.0.0`
+- [x] All 268 tests pass without modification (optional params with defaults = zero breaking changes)
+- [x] ESLint, TypeScript, and build all clean
+
+### Documentation
+
+- [x] Create `docs/reference.md` — complete API reference (25 types, 11 methods, 7 error codes)
+- [x] Create `docs/architecture.md` — module dependencies, storage schema, write/query/snapshot paths
+- [x] Create `docs/hash-chain.md` — deterministic serialization, chain rules, tamper detection examples
+- [x] Create `docs/storage-format.md` — `.rblogs` binary format byte-level specification
+- [x] Create `docs/ast-diff-storage.md` — diff payload schema, reconstruction algorithm, storage savings
+- [x] Create `docs/integration-guide.md` — consumer guide with examples, error handling, deterministic mode
+- [x] Update `README.md` — add `compact()` to API surface, add `CompactionReport` type, add Documentation section with links
+
+### Done When
+
+- [x] No `Date.now()`, `Math.random()`, or `crypto.randomUUID()` in production code paths (only in the injectable default `generateUuidV4`)
+- [x] `idGenerator` is configurable via `EventLogConfig` for fully deterministic operation
+- [x] `compact()` is accessible on the `EventLog` interface
+- [x] `package.json` version matches the tagged release
+- [x] 6 documentation files in `docs/` cover the full public API
+- [x] README links to documentation
+- [x] All 268 tests pass, coverage thresholds met
+- [x] Re-tag `v1.0.0` with finalization changes

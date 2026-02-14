@@ -205,6 +205,12 @@ export interface EventLogConfig {
    * Default: last-write-wins (returns event payload).
    */
   readonly stateReducer?: ((state: unknown, event: Event) => unknown) | undefined;
+  /**
+   * Caller-provided ID generator for events and snapshots.
+   * Default: crypto.randomUUID() with a fallback for older environments.
+   * Inject a deterministic generator for reproducible outputs.
+   */
+  readonly idGenerator?: (() => string) | undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -257,6 +263,9 @@ export interface EventLog {
 
   /** Create a snapshot of the current state for a space. */
   createSnapshot(spaceId: string): Promise<Result<Snapshot>>;
+
+  /** Compact a space by creating a snapshot at the latest event. */
+  compact(spaceId: string): Promise<Result<CompactionReport>>;
 
   /** Get storage usage statistics. */
   getStorageUsage(): Promise<Result<StorageReport>>;

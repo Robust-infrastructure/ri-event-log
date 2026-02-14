@@ -23,7 +23,7 @@ export interface WriteEventInput {
 }
 
 /** Generate a UUID v4. Uses crypto.randomUUID when available, fallback otherwise. */
-function generateUuidV4(): string {
+export function generateUuidV4(): string {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- randomUUID may not exist in all environments
   if (typeof globalThis.crypto?.randomUUID === 'function') {
     return globalThis.crypto.randomUUID();
@@ -122,6 +122,7 @@ async function withSpaceLock<T>(spaceId: string, fn: () => Promise<T>): Promise<
 export async function writeEvent(
   db: EventLogDatabase,
   input: WriteEventInput,
+  idGenerator: () => string = generateUuidV4,
 ): Promise<Result<Event>> {
   // Validate input
   const validationError = validateInput(input);
@@ -136,7 +137,7 @@ export async function writeEvent(
       const sequenceNumber = await getNextSequenceNumber(db, input.spaceId);
 
       // Step 2: Generate ID and compute hash
-      const id = generateUuidV4();
+      const id = idGenerator();
 
       const eventWithoutHash: Omit<Event, 'hash'> = {
         id,

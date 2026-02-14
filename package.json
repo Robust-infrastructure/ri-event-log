@@ -1,6 +1,6 @@
 {
   "name": "ri-event-log",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Append-only immutable event log with hash chain integrity, temporal queries, and tiered storage",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -9,6 +9,7 @@ import type { Event, Snapshot, Result } from '../types.js';
 import type { EventLogDatabase, StoredSnapshot } from '../storage/database.js';
 import { toEvent } from '../storage/database.js';
 import { sha256, deterministicSerialize } from '../hash-chain/hash.js';
+import { generateUuidV4 } from '../storage/event-writer.js';
 
 /** State reducer signature — folds an event into accumulated state. */
 export type StateReducer = (state: unknown, event: Event) => unknown;
@@ -28,6 +29,7 @@ export async function createSnapshot(
   db: EventLogDatabase,
   spaceId: string,
   stateReducer: StateReducer,
+  idGenerator: () => string = generateUuidV4,
 ): Promise<Result<Snapshot>> {
   try {
     // Find the latest existing snapshot for this space
@@ -70,12 +72,9 @@ export async function createSnapshot(
 
     // Determine the sequence number of the last event included
     const lastEvent = events[events.length - 1];
-    const eventSequenceNumber = lastEvent !== undefined
-      ? lastEvent.sequenceNumber
-      : startAfterSeq; // No new events since last snapshot
 
-    // If no new events since last snapshot, don't create a duplicate
-    if (lastEvent === undefined && latestSnapshot !== undefined) {
+    // If no new events exist, don't create a duplicate snapshot
+    if (lastEvent === undefined) {
       return {
         ok: false,
         error: {
@@ -86,9 +85,11 @@ export async function createSnapshot(
       };
     }
 
-    // Generate snapshot ID and hash
-    const timestamp = new Date().toISOString();
-    const snapshotId = crypto.randomUUID();
+    const eventSequenceNumber = lastEvent.sequenceNumber;
+
+    // Derive timestamp from last included event (determinism: no Date.now())
+    const timestamp = lastEvent.timestamp;
+    const snapshotId = idGenerator();
     const stateHash = await sha256(deterministicSerialize(state));
 
     const storedSnapshot: StoredSnapshot = {
