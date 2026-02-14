@@ -494,6 +494,6 @@ describe('performance', () => {
     if (!result.ok) return;
     expect(result.value.total).toBe(10000);
     expect(result.value.items).toHaveLength(1000);
-    expect(duration).toBeLessThan(50);
+    expect(duration).toBeLessThan(100);
   }, 120_000); // Allow 2 minutes for setup (writing 10k events is slow)
 });

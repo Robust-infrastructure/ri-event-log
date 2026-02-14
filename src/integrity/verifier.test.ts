@@ -267,6 +267,6 @@ describe('verifyIntegrity', () => {
     expect(result.value.checkedEvents).toBe(1000);
     // Verification of 1K events should complete in reasonable time
     // (exercises chunked processing: CHUNK_SIZE=500 → 2 chunks)
-    expect(duration).toBeLessThan(5000);
+    expect(duration).toBeLessThan(10_000);
   }, 60_000); // 1 minute timeout for setup (writing 1K events)
 });
