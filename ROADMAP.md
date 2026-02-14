@@ -390,7 +390,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M9: AST Diff Storage (Status: NOT STARTED)
+## M9: AST Diff Storage (Status: COMPLETE ✅)
 
 **Goal**: Optimize storage for frequently edited spaces — store AST diffs instead of full source snapshots.
 
@@ -398,45 +398,45 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Define diff payload schema for `space_evolved` events:
+- [x] Define diff payload schema for `space_evolved` events:
     - `astDiff`: array of `{ path: string; operation: 'add' | 'modify' | 'remove'; before?: unknown; after?: unknown }`
     - `scopeMetadata`: `{ changedNodes: number; totalNodes: number; affectedFunctions: string[] }`
     - `sourceHash`: SHA-256 of the full source AFTER applying the diff
-- [ ] Define payload schemas for other event types:
+- [x] Define payload schemas for other event types:
     - `space_created`: `{ source: string; sourceHash: string; compiledWasmHash: string }`
     - `space_forked`: `{ sourceSpaceId: string; forkTimestamp: string }`
-- [ ] Create `src/diff/diff-storage.ts` — diff-aware event writing
+- [x] Create `src/diff/diff-storage.ts` — diff-aware event writing
     - `writeDiffEvent(spaceId, astDiff, scopeMetadata, sourceHash)`: creates `space_evolved` event with diff payload
     - Validates diff structure (non-empty operations array, valid operation types)
     - Stores compact diff instead of full source
-- [ ] Create `src/diff/diff-reconstructor.ts` — reconstruct source from diffs
+- [x] Create `src/diff/diff-reconstructor.ts` — reconstruct source from diffs
     - `reconstructSource(spaceId, atTimestamp?)`:
         1. Find genesis (`space_created`) or nearest snapshot with full source
         2. Apply each subsequent `space_evolved` diff in sequence
         3. Verify `sourceHash` at each step matches expected
         4. Return reconstructed source
     - Error if diff application fails or hash mismatch detected
-- [ ] Create `src/diff/diff-storage.test.ts` — unit tests:
+- [x] Create `src/diff/diff-storage.test.ts` — unit tests:
     - Write diff event with valid structure
     - Reject diff with empty operations array
     - Reject diff with invalid operation type
     - Storage size: 100 diff events < 100 full source events (by 10x+)
-- [ ] Create `src/diff/diff-reconstructor.test.ts` — unit tests:
+- [x] Create `src/diff/diff-reconstructor.test.ts` — unit tests:
     - Reconstruct from genesis + 1 diff
     - Reconstruct from genesis + 100 diffs
     - Reconstruct from snapshot + diffs (skips genesis chain)
     - Hash mismatch at step N: returns error with step number
     - Empty diff (no changes): state unchanged
-- [ ] Wire diff-aware writes into `EventLog` as optional helpers (main `writeEvent` still works for all event types)
+- [x] Wire diff-aware writes into `EventLog` as optional helpers (main `writeEvent` still works for all event types)
 
 ### Done When
 
-- [ ] Diff events store compact AST changes instead of full source
-- [ ] Source reconstruction from diffs is correct and verified via hashes
-- [ ] Storage savings demonstrated: diffs use ~10x less space than full snapshots
-- [ ] Hash chain integrity maintained for diff events
-- [ ] All unit tests pass
-- [ ] Coverage ≥ 90% for diff modules
+- [x] Diff events store compact AST changes instead of full source
+- [x] Source reconstruction from diffs is correct and verified via hashes
+- [x] Storage savings demonstrated: diffs use ~10x less space than full snapshots
+- [x] Hash chain integrity maintained for diff events
+- [x] All unit tests pass
+- [x] Coverage ≥ 90% for diff modules
 
 ---
 

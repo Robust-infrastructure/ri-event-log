@@ -4,7 +4,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M8: Export & Import (Tiered Storage)** — Complete
+**M9: AST Diff Storage** — Complete
 
 | Milestone | Status |
 |-----------|--------|
@@ -16,6 +16,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 | M6: Snapshots & State Reconstruction | Complete |
 | M7: Storage Budget & Monitoring | Complete |
 | M8: Export & Import (Tiered Storage) | Complete |
+| M9: AST Diff Storage | Complete |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
@@ -132,6 +133,10 @@ interface EventLog {
 | `IntegrityReport` | Hash chain verification result |
 | `StorageReport` | Storage utilization with per-space breakdown |
 | `ImportReport` | Archive import result with success/skip/error counts |
+| `AstDiffOperation` | A single AST diff operation (add/modify/remove at a path) |
+| `DiffPayload` | Structured payload for `space_evolved` events with AST diffs |
+| `SpaceCreatedPayload` | Structured payload for `space_created` genesis events |
+| `ReconstructedSource` | Result of source reconstruction from diffs |
 | `EventLogConfig` | Configuration: database name, snapshot interval, state reducer |
 | `EventLogError` | Discriminated union of 7 error types |
 | `Result<T, E>` | `{ ok: true; value: T } \| { ok: false; error: E }` |

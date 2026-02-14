@@ -47,3 +47,18 @@ export { getStoragePressure } from './storage/pressure.js';
 
 // Writer input type
 export type { WriteEventInput } from './storage/event-writer.js';
+
+// Diff types (M9)
+export type {
+  AstDiffOperation,
+  DiffOperationType,
+  ScopeMetadata,
+  DiffPayload,
+  SpaceCreatedPayload,
+  SpaceForkedPayload,
+  ReconstructedSource,
+} from './diff/types.js';
+
+// Diff helpers (optional — main writeEvent still works for all event types)
+export { writeDiffEvent, writeGenesisEvent } from './diff/diff-storage.js';
+export { reconstructSource } from './diff/diff-reconstructor.js';
