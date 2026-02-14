@@ -54,7 +54,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 ### Tasks
 
 - [ ] Define `Event` interface — `id` (string, UUID v4), `type` (string), `spaceId` (string), `timestamp` (ISO 8601 string), `sequenceNumber` (number), `hash` (string, SHA-256 hex), `previousHash` (string | null for genesis), `version` (number, schema version), `payload` (Record<string, unknown>)
-- [ ] Define `EventType` union — `space_created`, `space_evolved`, `space_forked`, `space_deleted`, `state_changed`, `action_invoked`, `intent_submitted`, `intent_resolved`, `user_feedback`, `system_event`
+- [ ] Define `EventType` union — `space_created`, `space_evolved`, `space_forked`, `space_deleted`, `state_changed`, `action_invoked`, `intent_submitted`, `intent_queued`, `intent_resolved`, `user_feedback`, `system_event`
 - [ ] Define `QueryOptions` — `limit` (default 100, max 1000), `cursor` (opaque string), `order` ('asc' | 'desc', default 'asc')
 - [ ] Define `PaginatedResult<T>` — `items: T[]`, `nextCursor?: string`, `total: number`
 - [ ] Define `Snapshot` interface — `id`, `spaceId`, `eventSequenceNumber`, `timestamp`, `state` (unknown), `hash` (integrity hash of snapshot content)
