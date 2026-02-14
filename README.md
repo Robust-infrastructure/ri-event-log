@@ -4,14 +4,14 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M3: Event Storage & Hash Chain** — Complete
+**M4: Query Engine** — Complete
 
 | Milestone | Status |
 |-----------|--------|
 | M1: Project Scaffolding | Complete |
 | M2: Core Types & Event Schema | Complete |
 | M3: Event Storage & Hash Chain | Complete |
-| M4: Query Engine | Not Started |
+| M4: Query Engine | Complete |
 | M5: Integrity Verification | Not Started |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
@@ -55,6 +55,26 @@ if (result.ok) {
   console.log('Hash:', result.value.hash);
   console.log('Sequence:', result.value.sequenceNumber);
 }
+
+// Query events by space
+const events = await log.queryBySpace('space-1', { limit: 50, order: 'desc' });
+if (events.ok) {
+  console.log(`Found ${String(events.value.total)} events`);
+  for (const event of events.value.items) {
+    console.log(event.id, event.type, event.timestamp);
+  }
+  // Fetch next page
+  if (events.value.nextCursor) {
+    const page2 = await log.queryBySpace('space-1', {
+      limit: 50,
+      cursor: events.value.nextCursor,
+    });
+  }
+}
+
+// Query by type or time range
+const actions = await log.queryByType('action_invoked');
+const recent = await log.queryByTime('2026-01-01T00:00:00Z', '2026-02-01T00:00:00Z');
 ```
 
 ## API Surface

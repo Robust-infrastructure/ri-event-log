@@ -140,7 +140,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M4: Query Engine (Status: NOT STARTED)
+## M4: Query Engine (Status: COMPLETE)
 
 **Goal**: All query methods — by space, by type, by time range — with cursor-based pagination.
 
@@ -148,18 +148,18 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Create `src/queries/query-engine.ts` — query executor
+- [x] Create `src/queries/query-engine.ts` — query executor
     - `queryBySpace(spaceId, options?)` — returns all events for a space, paginated
     - `queryByType(type, options?)` — returns all events of a given type, paginated
     - `queryByTime(from, to, options?)` — returns events within ISO 8601 time range, paginated
     - All queries support `limit` (default 100, max 1000), `cursor`, `order` (asc/desc)
-- [ ] Implement cursor-based pagination
+- [x] Implement cursor-based pagination
     - Cursor encodes `(sequenceNumber, id)` — opaque base64 string to caller
     - Forward cursor: `WHERE sequenceNumber > cursor.seq`
     - Backward cursor: `WHERE sequenceNumber < cursor.seq` (for desc order)
     - `nextCursor` is undefined when no more results
-- [ ] Implement `total` count — use Dexie `.count()` with the same filters
-- [ ] Create `src/queries/query-engine.test.ts` — unit tests:
+- [x] Implement `total` count — use Dexie `.count()` with the same filters
+- [x] Create `src/queries/query-engine.test.ts` — unit tests:
     - Empty database returns `{ items: [], nextCursor: undefined, total: 0 }`
     - queryBySpace returns only events for the requested space
     - queryByType returns only events of the requested type
@@ -170,16 +170,16 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
     - Order: `asc` returns oldest first, `desc` returns newest first
     - Limit clamped to max 1000 — requesting 2000 returns 1000
     - Cross-space: events from different spaces don't leak into each other's queries
-- [ ] Performance test: queryBySpace with 10,000 events completes in < 50ms
-- [ ] Wire all query methods into `EventLog` factory
+- [x] Performance test: queryBySpace with 10,000 events completes in < 50ms
+- [x] Wire all query methods into `EventLog` factory
 
 ### Done When
 
-- [ ] All three query methods work with pagination
-- [ ] Cursor-based pagination is correct and opaque to callers
-- [ ] 10,000-event query completes in < 50ms
-- [ ] All unit tests pass
-- [ ] Coverage ≥ 90% for query module
+- [x] All three query methods work with pagination
+- [x] Cursor-based pagination is correct and opaque to callers
+- [x] 10,000-event query completes in < 50ms
+- [x] All unit tests pass
+- [x] Coverage ≥ 90% for query module
 
 ---
 

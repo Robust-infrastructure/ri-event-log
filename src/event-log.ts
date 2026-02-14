@@ -22,6 +22,7 @@ import type {
 import { createDatabase } from './storage/database.js';
 import { writeEvent } from './storage/event-writer.js';
 import type { WriteEventInput } from './storage/event-writer.js';
+import { queryBySpace, queryByType, queryByTime } from './queries/query-engine.js';
 
 /** Resolved configuration with defaults applied. */
 interface ResolvedConfig {
@@ -89,25 +90,25 @@ export function createEventLog(config?: EventLogConfig): EventLog {
     // --- Query methods (M4) ---
 
     queryBySpace(
-      _spaceId: string,
-      _options?: QueryOptions,
+      spaceId: string,
+      options?: QueryOptions,
     ): Promise<Result<PaginatedResult<Event>>> {
-      return notImplemented('queryBySpace');
+      return queryBySpace(db, spaceId, options);
     },
 
     queryByType(
-      _type: EventType,
-      _options?: QueryOptions,
+      type: EventType,
+      options?: QueryOptions,
     ): Promise<Result<PaginatedResult<Event>>> {
-      return notImplemented('queryByType');
+      return queryByType(db, type, options);
     },
 
     queryByTime(
-      _from: string,
-      _to: string,
-      _options?: QueryOptions,
+      from: string,
+      to: string,
+      options?: QueryOptions,
     ): Promise<Result<PaginatedResult<Event>>> {
-      return notImplemented('queryByTime');
+      return queryByTime(db, from, to, options);
     },
 
     // --- State reconstruction (M6) ---
