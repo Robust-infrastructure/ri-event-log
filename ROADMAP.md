@@ -220,7 +220,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M6: Snapshots & State Reconstruction (Status: NOT STARTED)
+## M6: Snapshots & State Reconstruction (Status: COMPLETE ✅)
 
 **Goal**: Snapshot creation and temporal state reconstruction — reconstruct any space's state at any point in time.
 
@@ -228,14 +228,14 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Create `src/snapshots/snapshot-manager.ts` — snapshot operations
+- [x] Create `src/snapshots/snapshot-manager.ts` — snapshot operations
     - `createSnapshot(spaceId)` — capture current state:
         1. Query all events for space (ordered by sequence)
         2. Build state by applying events sequentially (caller provides `stateReducer` in config)
         3. Store snapshot: `{ id, spaceId, eventSequenceNumber, timestamp, state, hash }`
         4. Hash includes state content for integrity
     - Auto-snapshot: trigger after every `snapshotInterval` events per space (configurable, default 100)
-- [ ] Create `src/snapshots/state-reconstructor.ts` — `reconstructState` implementation
+- [x] Create `src/snapshots/state-reconstructor.ts` — `reconstructState` implementation
     - `reconstructState(spaceId, atTimestamp?)`:
         1. Find nearest snapshot BEFORE `atTimestamp` (or latest if no timestamp)
         2. Load snapshot state
@@ -244,16 +244,16 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
         5. Return reconstructed state
     - If no snapshot exists: replay from genesis (`space_created` event)
     - If `atTimestamp` predates all events: return null/error
-- [ ] Add `stateReducer` to `EventLogConfig` — `(state: unknown, event: Event) => unknown`
+- [x] Add `stateReducer` to `EventLogConfig` — `(state: unknown, event: Event) => unknown`
     - Default reducer: returns event payload (last-write-wins)
     - Caller can provide custom reducer for domain-specific state
-- [ ] Create `src/snapshots/snapshot-manager.test.ts` — unit tests:
+- [x] Create `src/snapshots/snapshot-manager.test.ts` — unit tests:
     - Creates snapshot with correct sequence number
     - Snapshot hash matches state content
     - Auto-snapshot triggers at configured interval
     - Snapshot of empty space returns initial state
     - Multiple snapshots for same space, different sequence points
-- [ ] Create `src/snapshots/state-reconstructor.test.ts` — unit tests:
+- [x] Create `src/snapshots/state-reconstructor.test.ts` — unit tests:
     - Reconstruct from genesis (no snapshots): applies all events
     - Reconstruct from snapshot: applies only events after snapshot
     - Reconstruct at specific timestamp: stops at correct point
@@ -261,17 +261,17 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
     - 1000 events with snapshot every 100: reconstruction < 100ms
     - Timestamp before all events: returns error or initial state
     - Timestamp after all events: returns latest state
-- [ ] Wire `createSnapshot` and `reconstructState` into `EventLog` factory
+- [x] Wire `createSnapshot` and `reconstructState` into `EventLog` factory
 
 ### Done When
 
-- [ ] Snapshots are created and stored correctly
-- [ ] Auto-snapshot triggers at the configured interval
-- [ ] State reconstruction uses nearest snapshot + event replay
-- [ ] Custom `stateReducer` works correctly
-- [ ] Reconstruction of 1000 events with snapshots < 100ms
-- [ ] All unit tests pass
-- [ ] Coverage ≥ 90% for snapshot and reconstruction modules
+- [x] Snapshots are created and stored correctly
+- [x] Auto-snapshot triggers at the configured interval
+- [x] State reconstruction uses nearest snapshot + event replay
+- [x] Custom `stateReducer` works correctly
+- [x] Reconstruction of 1000 events with snapshots < 100ms
+- [x] All unit tests pass
+- [x] Coverage ≥ 90% for snapshot and reconstruction modules
 
 ---
 

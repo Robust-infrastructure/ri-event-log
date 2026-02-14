@@ -2,8 +2,9 @@
  * ri-event-log — EventLog factory
  *
  * Creates an EventLog instance backed by IndexedDB (via Dexie).
- * Currently implements writeEvent (M3). Additional methods will be
- * added in subsequent milestones.
+ * Implements writeEvent, queries, integrity verification, snapshots,
+ * and state reconstruction. Additional methods will be added in
+ * subsequent milestones.
  */
 
 import type {
@@ -24,6 +25,8 @@ import { writeEvent } from './storage/event-writer.js';
 import type { WriteEventInput } from './storage/event-writer.js';
 import { queryBySpace, queryByType, queryByTime } from './queries/query-engine.js';
 import { verifyIntegrity } from './integrity/verifier.js';
+import { createSnapshot, shouldAutoSnapshot } from './snapshots/snapshot-manager.js';
+import { reconstructState } from './snapshots/state-reconstructor.js';
 
 /** Resolved configuration with defaults applied. */
 interface ResolvedConfig {
@@ -85,7 +88,17 @@ export function createEventLog(config?: EventLogConfig): EventLog {
         version: event.version,
         payload: event.payload,
       };
-      return writeEvent(db, input);
+      const result = await writeEvent(db, input);
+
+      // Auto-snapshot check after successful write
+      if (result.ok) {
+        const shouldSnap = await shouldAutoSnapshot(db, result.value.spaceId, resolved.snapshotInterval);
+        if (shouldSnap) {
+          await createSnapshot(db, result.value.spaceId, resolved.stateReducer);
+        }
+      }
+
+      return result;
     },
 
     // --- Query methods (M4) ---
@@ -115,10 +128,10 @@ export function createEventLog(config?: EventLogConfig): EventLog {
     // --- State reconstruction (M6) ---
 
     reconstructState(
-      _spaceId: string,
-      _atTimestamp?: string,
+      spaceId: string,
+      atTimestamp?: string,
     ): Promise<Result<unknown>> {
-      return notImplemented('reconstructState');
+      return reconstructState(db, spaceId, resolved.stateReducer, atTimestamp);
     },
 
     // --- Integrity (M5) ---
@@ -129,8 +142,8 @@ export function createEventLog(config?: EventLogConfig): EventLog {
 
     // --- Snapshots (M6) ---
 
-    createSnapshot(_spaceId: string): Promise<Result<Snapshot>> {
-      return notImplemented('createSnapshot');
+    createSnapshot(spaceId: string): Promise<Result<Snapshot>> {
+      return createSnapshot(db, spaceId, resolved.stateReducer);
     },
 
     // --- Storage (M7) ---

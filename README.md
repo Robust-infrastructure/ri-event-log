@@ -4,7 +4,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M5: Integrity Verification** — Complete
+**M6: Snapshots & State Reconstruction** — Complete
 
 | Milestone | Status |
 |-----------|--------|
@@ -13,7 +13,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 | M3: Event Storage & Hash Chain | Complete |
 | M4: Query Engine | Complete |
 | M5: Integrity Verification | Complete |
-| M6: Snapshots & State Reconstruction | Not Started |
+| M6: Snapshots & State Reconstruction | Complete |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
@@ -76,6 +76,29 @@ if (events.ok) {
 // Query by type or time range
 const actions = await log.queryByType('action_invoked');
 const recent = await log.queryByTime('2026-01-01T00:00:00Z', '2026-02-01T00:00:00Z');
+
+// Create a snapshot and reconstruct state
+const snapshot = await log.createSnapshot('space-1');
+if (snapshot.ok) {
+  console.log('Snapshot at sequence:', snapshot.value.eventSequenceNumber);
+}
+
+// Reconstruct state at a specific point in time
+const state = await log.reconstructState('space-1', '2026-01-15T12:00:00Z');
+if (state.ok) {
+  console.log('State at timestamp:', state.value);
+}
+
+// Reconstruct latest state (uses nearest snapshot + replay)
+const latest = await log.reconstructState('space-1');
+
+// Custom state reducer for domain-specific state
+const log2 = createEventLog({
+  stateReducer: (state, event) => {
+    const s = (state ?? { count: 0 }) as { count: number };
+    return { count: s.count + 1, lastType: event.type };
+  },
+});
 ```
 
 ## API Surface
