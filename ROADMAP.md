@@ -8,7 +8,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M1: Project Scaffolding (Status: NOT STARTED)
+## M1: Project Scaffolding (Status: COMPLETE)
 
 **Goal**: Working TypeScript project with build, test, lint, and CI infrastructure.
 
@@ -16,32 +16,32 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Initialize npm project (`npm init`) with `"type": "module"`
-- [ ] Install dev dependencies: `typescript`, `vitest`, `tsup`, `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`, `prettier`
-- [ ] Create `tsconfig.json` (strict mode, ES2022 target, ESNext modules, bundler resolution)
-- [ ] Create `vitest.config.ts` with v8 coverage provider, 90% line / 85% branch / 90% function thresholds
-- [ ] Create `tsup.config.ts` — ESM + CJS dual output, entry `src/index.ts`, dts generation
-- [ ] Create `.eslintrc.cjs` or `eslint.config.js` with @typescript-eslint strict rules
-- [ ] Create `.prettierrc` (singleQuote, trailingComma, printWidth 100)
-- [ ] Create `src/index.ts` with placeholder export
-- [ ] Create `src/types.ts` with all public type definitions (see M2)
-- [ ] Create `src/errors.ts` with error type union
-- [ ] Create GitHub Actions workflow `.github/workflows/ci.yml` — runs lint, type-check, test on push/PR
-- [ ] Create `README.md` — project description, API overview, install instructions, usage example
-- [ ] Create `LICENSE` (MIT)
-- [ ] Verify: `npx tsc --noEmit` passes
-- [ ] Verify: `npx vitest run` passes (placeholder test)
-- [ ] Verify: `npx tsup` produces `dist/` with ESM + CJS + types
-- [ ] Commit and tag `v0.1.0`
+- [x] Initialize npm project (`npm init`) with `"type": "module"`
+- [x] Install dev dependencies: `typescript`, `vitest`, `tsup`, `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`, `prettier`
+- [x] Create `tsconfig.json` (strict mode, ES2022 target, ESNext modules, bundler resolution)
+- [x] Create `vitest.config.ts` with v8 coverage provider, 90% line / 85% branch / 90% function thresholds
+- [x] Create `tsup.config.ts` — ESM + CJS dual output, entry `src/index.ts`, dts generation
+- [x] Create `.eslintrc.cjs` or `eslint.config.js` with @typescript-eslint strict rules
+- [x] Create `.prettierrc` (singleQuote, trailingComma, printWidth 100)
+- [x] Create `src/index.ts` with placeholder export
+- [x] Create `src/types.ts` with all public type definitions (see M2)
+- [x] Create `src/errors.ts` with error type union
+- [x] Create GitHub Actions workflow `.github/workflows/ci.yml` — runs lint, type-check, test on push/PR
+- [x] Create `README.md` — project description, API overview, install instructions, usage example
+- [x] Create `LICENSE` (MIT)
+- [x] Verify: `npx tsc --noEmit` passes
+- [x] Verify: `npx vitest run` passes (placeholder test)
+- [x] Verify: `npx tsup` produces `dist/` with ESM + CJS + types
+- [x] Commit and tag `v0.1.0`
 
 ### Done When
 
-- [ ] `npm run build` produces working ESM + CJS output with `.d.ts` files
-- [ ] `npm run test` runs Vitest with zero failures
-- [ ] `npm run lint` passes with zero warnings
-- [ ] `npm run typecheck` passes with zero errors
-- [ ] CI workflow runs successfully on push
-- [ ] README documents the project purpose and planned API
+- [x] `npm run build` produces working ESM + CJS output with `.d.ts` files
+- [x] `npm run test` runs Vitest with zero failures
+- [x] `npm run lint` passes with zero warnings
+- [x] `npm run typecheck` passes with zero errors
+- [x] CI workflow runs successfully on push
+- [x] README documents the project purpose and planned API
 
 ---
 
