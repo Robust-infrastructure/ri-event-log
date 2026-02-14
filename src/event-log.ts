@@ -28,6 +28,8 @@ import { verifyIntegrity } from './integrity/verifier.js';
 import { createSnapshot, shouldAutoSnapshot } from './snapshots/snapshot-manager.js';
 import { reconstructState } from './snapshots/state-reconstructor.js';
 import { getStorageUsage } from './storage/budget.js';
+import { exportArchive } from './archive/exporter.js';
+import { importArchive } from './archive/importer.js';
 
 /** Resolved configuration with defaults applied. */
 interface ResolvedConfig {
@@ -54,18 +56,6 @@ function resolveConfig(config?: EventLogConfig): ResolvedConfig {
     hashAlgorithm: config?.hashAlgorithm ?? 'SHA-256',
     stateReducer: config?.stateReducer ?? defaultStateReducer,
   };
-}
-
-/** Stub error for methods not yet implemented. */
-function notImplemented(method: string): Promise<Result<never>> {
-  return Promise.resolve({
-    ok: false,
-    error: {
-      code: 'DATABASE_ERROR' as const,
-      operation: method,
-      reason: 'Not yet implemented',
-    },
-  });
 }
 
 /**
@@ -156,14 +146,14 @@ export function createEventLog(config?: EventLogConfig): EventLog {
     // --- Archive (M8) ---
 
     exportArchive(
-      _spaceId: string,
-      _beforeDate: string,
+      spaceId: string,
+      beforeDate: string,
     ): Promise<Result<Uint8Array>> {
-      return notImplemented('exportArchive');
+      return exportArchive(db, spaceId, beforeDate);
     },
 
-    importArchive(_archive: Uint8Array): Promise<Result<ImportReport>> {
-      return notImplemented('importArchive');
+    importArchive(archive: Uint8Array): Promise<Result<ImportReport>> {
+      return importArchive(db, archive);
     },
   };
 }

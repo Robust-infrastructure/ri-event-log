@@ -332,7 +332,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M8: Export & Import (Tiered Storage) (Status: NOT STARTED)
+## M8: Export & Import (Tiered Storage) (Status: COMPLETE ✅)
 
 **Goal**: Export events to archive format, import archives back — enabling tiered storage.
 
@@ -340,11 +340,11 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Define archive format: `.rblogs` — a compressed binary format:
+- [x] Define archive format: `.rblogs` — a compressed binary format:
     - Header: magic bytes (`RBLOG`), format version (uint8), event count (uint32)
-    - Body: JSON-serialized event array, compressed with CompressionStream (gzip)
+    - Body: JSON-serialized event array, compressed with CompressionStream (deflate)
     - Footer: SHA-256 hash of uncompressed body (integrity check)
-- [ ] Create `src/archive/exporter.ts` — `exportArchive` implementation
+- [x] Create `src/archive/exporter.ts` — `exportArchive` implementation
     - `exportArchive(spaceId, beforeDate)`:
         1. Query events for space older than `beforeDate`
         2. Serialize events to JSON array
@@ -353,7 +353,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
         5. Return `Uint8Array`
     - Verify hash chain integrity of exported events before export
     - Return error if events fail integrity check
-- [ ] Create `src/archive/importer.ts` — `importArchive` implementation
+- [x] Create `src/archive/importer.ts` — `importArchive` implementation
     - `importArchive(archive)`:
         1. Parse header, verify magic bytes and format version
         2. Decompress body with `DecompressionStream`
@@ -364,29 +364,29 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
         7. Write non-duplicate events to database
         8. Return `ImportReport`
     - Handle version mismatches (future-proof: reject unknown versions)
-- [ ] Create `src/archive/exporter.test.ts` — unit tests:
+- [x] Create `src/archive/exporter.test.ts` — unit tests:
     - Export 100 events: produces valid archive
     - Export from empty space: produces archive with 0 events
     - Export with `beforeDate` filters correctly
     - Archive integrity hash is correct
     - Exported archive can be imported back (round-trip)
-- [ ] Create `src/archive/importer.test.ts` — unit tests:
+- [x] Create `src/archive/importer.test.ts` — unit tests:
     - Import valid archive: all events written
     - Import with duplicates: duplicates skipped, report correct
     - Import corrupted archive (bad hash): returns error
     - Import unknown version: returns error
     - Import archive with broken hash chain: returns error
     - Round-trip: export → import → verify identical events
-- [ ] Wire `exportArchive` and `importArchive` into `EventLog` factory
+- [x] Wire `exportArchive` and `importArchive` into `EventLog` factory
 
 ### Done When
 
-- [ ] Export produces a valid compressed archive with integrity hash
-- [ ] Import verifies integrity, deduplicates, and writes events
-- [ ] Round-trip (export → import) produces identical event data
-- [ ] Corrupted or invalid archives are rejected with clear errors
-- [ ] All unit tests pass
-- [ ] Coverage ≥ 90% for archive modules
+- [x] Export produces a valid compressed archive with integrity hash
+- [x] Import verifies integrity, deduplicates, and writes events
+- [x] Round-trip (export → import) produces identical event data
+- [x] Corrupted or invalid archives are rejected with clear errors
+- [x] All unit tests pass
+- [x] Coverage ≥ 90% for archive modules
 
 ---
 

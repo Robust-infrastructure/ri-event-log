@@ -4,7 +4,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M7: Storage Budget & Monitoring** — Complete
+**M8: Export & Import (Tiered Storage)** — Complete
 
 | Milestone | Status |
 |-----------|--------|
@@ -15,6 +15,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 | M5: Integrity Verification | Complete |
 | M6: Snapshots & State Reconstruction | Complete |
 | M7: Storage Budget & Monitoring | Complete |
+| M8: Export & Import (Tiered Storage) | Complete |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
