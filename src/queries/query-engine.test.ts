@@ -165,6 +165,7 @@ describe('queryBySpace pagination', () => {
     expect(page1.value.items).toHaveLength(100);
     expect(page1.value.total).toBe(250);
     expect(page1.value.nextCursor).toBeDefined();
+    if (page1.value.nextCursor === undefined) return;
 
     // Page 2
     const page2 = await queryBySpace(db, 'space-1', {
@@ -175,6 +176,7 @@ describe('queryBySpace pagination', () => {
     if (!page2.ok) return;
     expect(page2.value.items).toHaveLength(100);
     expect(page2.value.nextCursor).toBeDefined();
+    if (page2.value.nextCursor === undefined) return;
 
     // Page 3
     const page3 = await queryBySpace(db, 'space-1', {
@@ -212,6 +214,7 @@ describe('queryBySpace pagination', () => {
     if (!page1.ok) return;
     expect(page1.value.items).toHaveLength(10);
     expect(page1.value.nextCursor).toBeDefined();
+    if (page1.value.nextCursor === undefined) return;
 
     // First item in desc should have highest sequence number
     const firstSeq = page1.value.items[0]?.sequenceNumber;
@@ -288,6 +291,7 @@ describe('queryByType', () => {
     if (!page1.ok) return;
     expect(page1.value.items).toHaveLength(10);
     expect(page1.value.nextCursor).toBeDefined();
+    if (page1.value.nextCursor === undefined) return;
 
     const page2 = await queryByType(db, 'space_created', {
       limit: 10,
@@ -395,6 +399,7 @@ describe('queryByTime', () => {
     if (!page1.ok) return;
     expect(page1.value.items).toHaveLength(7);
     expect(page1.value.nextCursor).toBeDefined();
+    if (page1.value.nextCursor === undefined) return;
 
     const page2 = await queryByTime(db, from, to, {
       limit: 7,
@@ -404,6 +409,7 @@ describe('queryByTime', () => {
     if (!page2.ok) return;
     expect(page2.value.items).toHaveLength(7);
     expect(page2.value.nextCursor).toBeDefined();
+    if (page2.value.nextCursor === undefined) return;
 
     const page3 = await queryByTime(db, from, to, {
       limit: 7,

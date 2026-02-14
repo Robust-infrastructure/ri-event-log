@@ -23,6 +23,7 @@ import { createDatabase } from './storage/database.js';
 import { writeEvent } from './storage/event-writer.js';
 import type { WriteEventInput } from './storage/event-writer.js';
 import { queryBySpace, queryByType, queryByTime } from './queries/query-engine.js';
+import { verifyIntegrity } from './integrity/verifier.js';
 
 /** Resolved configuration with defaults applied. */
 interface ResolvedConfig {
@@ -122,8 +123,8 @@ export function createEventLog(config?: EventLogConfig): EventLog {
 
     // --- Integrity (M5) ---
 
-    verifyIntegrity(_spaceId?: string): Promise<Result<IntegrityReport>> {
-      return notImplemented('verifyIntegrity');
+    verifyIntegrity(spaceId?: string): Promise<Result<IntegrityReport>> {
+      return verifyIntegrity(db, spaceId);
     },
 
     // --- Snapshots (M6) ---

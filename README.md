@@ -4,7 +4,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M4: Query Engine** — Complete
+**M5: Integrity Verification** — Complete
 
 | Milestone | Status |
 |-----------|--------|
@@ -12,7 +12,8 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 | M2: Core Types & Event Schema | Complete |
 | M3: Event Storage & Hash Chain | Complete |
 | M4: Query Engine | Complete |
-| M5: Integrity Verification | Not Started |
+| M5: Integrity Verification | Complete |
+| M6: Snapshots & State Reconstruction | Not Started |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 

@@ -183,7 +183,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M5: Integrity Verification (Status: NOT STARTED)
+## M5: Integrity Verification (Status: COMPLETE)
 
 **Goal**: Full chain verification — detect any tampering or corruption in the event log.
 
@@ -191,14 +191,14 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Create `src/integrity/verifier.ts` — `verifyIntegrity` implementation
+- [x] Create `src/integrity/verifier.ts` — `verifyIntegrity` implementation
     - Walk the hash chain from genesis to latest event
     - For each event: recompute hash from payload, verify it matches stored hash
     - For each event: verify `previousHash` matches the prior event's hash
     - Support per-space verification (`spaceId` parameter) or full-database verification (all spaces)
     - Return `IntegrityReport` with: `valid`, `totalEvents`, `checkedEvents`, `firstBrokenLink` (if any), `duration`
     - Batch processing: verify in chunks of 500 events to avoid blocking
-- [ ] Create `src/integrity/verifier.test.ts` — unit tests:
+- [x] Create `src/integrity/verifier.test.ts` — unit tests:
     - Empty database: `{ valid: true, totalEvents: 0, checkedEvents: 0 }`
     - Single event: valid chain
     - 100 events: valid chain
@@ -208,15 +208,15 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
     - Per-space verification: only checks events for the requested space
     - Full verification: checks all spaces
     - 10,000 events: completes within 5 seconds
-- [ ] Wire `verifyIntegrity` into `EventLog` factory
+- [x] Wire `verifyIntegrity` into `EventLog` factory
 
 ### Done When
 
-- [ ] `verifyIntegrity` detects all forms of tampering (payload, hash, deletion)
-- [ ] Reports include exact location of first broken link
-- [ ] Per-space and full-database verification both work
-- [ ] All unit tests pass
-- [ ] Coverage ≥ 90% for verifier module
+- [x] `verifyIntegrity` detects all forms of tampering (payload, hash, deletion)
+- [x] Reports include exact location of first broken link
+- [x] Per-space and full-database verification both work
+- [x] All unit tests pass
+- [x] Coverage ≥ 90% for verifier module
 
 ---
 
