@@ -275,7 +275,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M7: Storage Budget & Monitoring (Status: NOT STARTED)
+## M7: Storage Budget & Monitoring (Status: COMPLETE)
 
 **Goal**: Track storage usage, enforce thresholds, and trigger appropriate actions at each level.
 
@@ -283,13 +283,13 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Create `src/storage/budget.ts` — storage budget monitor
+- [x] Create `src/storage/budget.ts` — storage budget monitor
     - `getStorageUsage()` — return `StorageReport`:
         - `totalEvents`, `totalSnapshots`, `estimatedBytes`
         - `oldestEvent`, `newestEvent` timestamps
         - Per-space breakdown: `{ spaceId, eventCount, estimatedBytes }`
     - `estimatedBytes`: sum of serialized event sizes (JSON.stringify length as byte estimate)
-- [ ] Create `src/storage/pressure.ts` — storage pressure levels
+- [x] Create `src/storage/pressure.ts` — storage pressure levels
     - `getStoragePressure(report: StorageReport, availableBytes: number): StoragePressureLevel`
     - Levels:
         - `NORMAL` (< 50%): no action
@@ -298,37 +298,37 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
         - `AGGRESSIVE` (80–90%): return recommendation for auto-compact + aggressive snapshots
         - `BLOCKED` (> 90%): return recommendation to block new space creation
     - Caller provides `availableBytes` — library doesn't access browser storage APIs directly
-- [ ] Create `src/storage/compaction.ts` — background compaction
+- [x] Create `src/storage/compaction.ts` — background compaction
     - `compact(spaceId)`:
         1. Create a snapshot at the latest event
         2. Mark old events as "compacted" (don't delete — append-only)
         3. Return compaction report: events compacted, bytes saved (estimated)
     - Note: compaction doesn't delete events (append-only guarantee). It creates snapshots so reconstruction doesn't need to replay from genesis.
-- [ ] Create `src/storage/budget.test.ts` — unit tests:
+- [x] Create `src/storage/budget.test.ts` — unit tests:
     - Empty database: zero events, zero bytes
     - 100 events: correct count and byte estimate
     - Per-space breakdown: events distributed across 5 spaces
     - Byte estimate grows linearly with event count
-- [ ] Create `src/storage/pressure.test.ts` — unit tests:
+- [x] Create `src/storage/pressure.test.ts` — unit tests:
     - Each threshold returns the correct level
     - Boundary values: exactly 50%, 70%, 80%, 90%
     - 0% usage: NORMAL
     - 100% usage: BLOCKED
-- [ ] Create `src/storage/compaction.test.ts` — unit tests:
+- [x] Create `src/storage/compaction.test.ts` — unit tests:
     - Compaction creates a snapshot
     - Compaction of space with no events: no-op
     - Compaction preserves all events (append-only)
     - Reconstruction works correctly after compaction (uses snapshot)
-- [ ] Wire `getStorageUsage` into `EventLog` factory
+- [x] Wire `getStorageUsage` into `EventLog` factory
 
 ### Done When
 
-- [ ] Storage usage tracking returns accurate reports
-- [ ] Pressure levels computed correctly for all thresholds
-- [ ] Compaction creates snapshots without deleting events
-- [ ] Post-compaction reconstruction works correctly
-- [ ] All unit tests pass
-- [ ] Coverage ≥ 90% for storage budget modules
+- [x] Storage usage tracking returns accurate reports
+- [x] Pressure levels computed correctly for all thresholds
+- [x] Compaction creates snapshots without deleting events
+- [x] Post-compaction reconstruction works correctly
+- [x] All unit tests pass
+- [x] Coverage ≥ 90% for storage budget modules
 
 ---
 

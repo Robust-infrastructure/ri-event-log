@@ -27,6 +27,7 @@ import { queryBySpace, queryByType, queryByTime } from './queries/query-engine.j
 import { verifyIntegrity } from './integrity/verifier.js';
 import { createSnapshot, shouldAutoSnapshot } from './snapshots/snapshot-manager.js';
 import { reconstructState } from './snapshots/state-reconstructor.js';
+import { getStorageUsage } from './storage/budget.js';
 
 /** Resolved configuration with defaults applied. */
 interface ResolvedConfig {
@@ -149,7 +150,7 @@ export function createEventLog(config?: EventLogConfig): EventLog {
     // --- Storage (M7) ---
 
     getStorageUsage(): Promise<Result<StorageReport>> {
-      return notImplemented('getStorageUsage');
+      return getStorageUsage(db);
     },
 
     // --- Archive (M8) ---

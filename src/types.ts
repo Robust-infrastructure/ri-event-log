@@ -134,6 +134,40 @@ export interface SpaceStorageInfo {
   readonly estimatedBytes: number;
 }
 
+// ---------------------------------------------------------------------------
+// Storage Pressure
+// ---------------------------------------------------------------------------
+
+/** Storage pressure level based on usage percentage. */
+export type StoragePressureLevel =
+  | 'NORMAL'
+  | 'COMPACT'
+  | 'EXPORT_PROMPT'
+  | 'AGGRESSIVE'
+  | 'BLOCKED';
+
+/** Storage pressure assessment returned by getStoragePressure. */
+export interface StoragePressureReport {
+  /** The computed pressure level. */
+  readonly level: StoragePressureLevel;
+  /** Usage as a fraction (0–1). */
+  readonly usageRatio: number;
+  /** Human-readable recommendation for the caller. */
+  readonly recommendation: string;
+}
+
+/** Result of a compaction operation. */
+export interface CompactionReport {
+  /** The space that was compacted. */
+  readonly spaceId: string;
+  /** Number of events covered by the snapshot. */
+  readonly eventsCompacted: number;
+  /** Estimated bytes saved by future snapshot-based reconstruction. */
+  readonly estimatedBytesSaved: number;
+  /** ID of the snapshot created during compaction. */
+  readonly snapshotId: string;
+}
+
 /** Result of an archive import operation. */
 export interface ImportReport {
   /** Number of events successfully imported. */

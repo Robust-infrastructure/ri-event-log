@@ -17,6 +17,9 @@ export type {
   IntegrityReport,
   StorageReport,
   SpaceStorageInfo,
+  StoragePressureLevel,
+  StoragePressureReport,
+  CompactionReport,
   ImportReport,
   ImportError,
   EventLogConfig,
@@ -38,6 +41,9 @@ export {
 
 // Factory
 export { createEventLog } from './event-log.js';
+
+// Storage pressure (pure function — no DB needed)
+export { getStoragePressure } from './storage/pressure.js';
 
 // Writer input type
 export type { WriteEventInput } from './storage/event-writer.js';

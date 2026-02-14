@@ -4,7 +4,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M6: Snapshots & State Reconstruction** — Complete
+**M7: Storage Budget & Monitoring** — Complete
 
 | Milestone | Status |
 |-----------|--------|
@@ -14,6 +14,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 | M4: Query Engine | Complete |
 | M5: Integrity Verification | Complete |
 | M6: Snapshots & State Reconstruction | Complete |
+| M7: Storage Budget & Monitoring | Complete |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
