@@ -4,7 +4,15 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ## Status
 
-**M1: Project Scaffolding** — In Progress
+**M3: Event Storage & Hash Chain** — Complete
+
+| Milestone | Status |
+|-----------|--------|
+| M1: Project Scaffolding | Complete |
+| M2: Core Types & Event Schema | Complete |
+| M3: Event Storage & Hash Chain | Complete |
+| M4: Query Engine | Not Started |
+| M5: Integrity Verification | Not Started |
 
 See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
@@ -24,6 +32,29 @@ See [ROADMAP.md](ROADMAP.md) for the full development plan.
 
 ```bash
 npm install ri-event-log
+```
+
+## Quick Start
+
+```typescript
+import { createEventLog } from 'ri-event-log';
+
+const log = createEventLog({ databaseName: 'my-app-log' });
+
+// Write an event
+const result = await log.writeEvent({
+  spaceId: 'space-1',
+  type: 'state_changed',
+  timestamp: new Date().toISOString(),
+  version: 1,
+  payload: { key: 'value' },
+});
+
+if (result.ok) {
+  console.log('Event written:', result.value.id);
+  console.log('Hash:', result.value.hash);
+  console.log('Sequence:', result.value.sequenceNumber);
+}
 ```
 
 ## API Surface

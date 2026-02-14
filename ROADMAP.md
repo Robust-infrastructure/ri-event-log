@@ -45,7 +45,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ---
 
-## M2: Core Types & Event Schema (Status: NOT STARTED)
+## M2: Core Types & Event Schema (Status: COMPLETE)
 
 **Goal**: All public types defined — the complete API contract before any implementation.
 
@@ -53,33 +53,33 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Define `Event` interface — `id` (string, UUID v4), `type` (string), `spaceId` (string), `timestamp` (ISO 8601 string), `sequenceNumber` (number), `hash` (string, SHA-256 hex), `previousHash` (string | null for genesis), `version` (number, schema version), `payload` (Record<string, unknown>)
-- [ ] Define `EventType` union — `space_created`, `space_evolved`, `space_forked`, `space_deleted`, `state_changed`, `action_invoked`, `intent_submitted`, `intent_queued`, `intent_resolved`, `user_feedback`, `system_event`
-- [ ] Define `QueryOptions` — `limit` (default 100, max 1000), `cursor` (opaque string), `order` ('asc' | 'desc', default 'asc')
-- [ ] Define `PaginatedResult<T>` — `items: T[]`, `nextCursor?: string`, `total: number`
-- [ ] Define `Snapshot` interface — `id`, `spaceId`, `eventSequenceNumber`, `timestamp`, `state` (unknown), `hash` (integrity hash of snapshot content)
-- [ ] Define `IntegrityReport` — `valid: boolean`, `totalEvents: number`, `checkedEvents: number`, `firstBrokenLink?: { eventId: string; expected: string; actual: string }`, `duration: number`
-- [ ] Define `StorageReport` — `totalEvents: number`, `totalSnapshots: number`, `estimatedBytes: number`, `oldestEvent?: string`, `newestEvent?: string`, per-space breakdown
-- [ ] Define `ImportReport` — `importedEvents: number`, `skippedDuplicates: number`, `errors: ImportError[]`
-- [ ] Define `EventLogConfig` — `databaseName` (string, default "event-log"), `schemaVersion` (number), `maxEventsPerQuery` (number, default 1000), `snapshotInterval` (number, default 100 — create snapshot every N events per space), `hashAlgorithm` ('SHA-256')
-- [ ] Define `EventLog` interface — all 10 methods with full signatures: `writeEvent`, `queryBySpace`, `queryByType`, `queryByTime`, `reconstructState`, `verifyIntegrity`, `createSnapshot`, `getStorageUsage`, `exportArchive`, `importArchive`
-- [ ] Define `EventLogError` discriminated union — `INTEGRITY_VIOLATION`, `STORAGE_FULL`, `INVALID_QUERY`, `INVALID_EVENT`, `SNAPSHOT_FAILED`, `IMPORT_FAILED`, `DATABASE_ERROR`
-- [ ] Define `Result<T, E>` type — `{ ok: true; value: T } | { ok: false; error: E }`
-- [ ] Write type-level tests — verify types compile correctly, verify discriminated unions narrow properly
-- [ ] Export all types from `src/index.ts`
-- [ ] Update `README.md` with full type documentation
+- [x] Define `Event` interface — `id` (string, UUID v4), `type` (string), `spaceId` (string), `timestamp` (ISO 8601 string), `sequenceNumber` (number), `hash` (string, SHA-256 hex), `previousHash` (string | null for genesis), `version` (number, schema version), `payload` (Record<string, unknown>)
+- [x] Define `EventType` union — `space_created`, `space_evolved`, `space_forked`, `space_deleted`, `state_changed`, `action_invoked`, `intent_submitted`, `intent_queued`, `intent_resolved`, `user_feedback`, `system_event`
+- [x] Define `QueryOptions` — `limit` (default 100, max 1000), `cursor` (opaque string), `order` ('asc' | 'desc', default 'asc')
+- [x] Define `PaginatedResult<T>` — `items: T[]`, `nextCursor?: string`, `total: number`
+- [x] Define `Snapshot` interface — `id`, `spaceId`, `eventSequenceNumber`, `timestamp`, `state` (unknown), `hash` (integrity hash of snapshot content)
+- [x] Define `IntegrityReport` — `valid: boolean`, `totalEvents: number`, `checkedEvents: number`, `firstBrokenLink?: { eventId: string; expected: string; actual: string }`, `duration: number`
+- [x] Define `StorageReport` — `totalEvents: number`, `totalSnapshots: number`, `estimatedBytes: number`, `oldestEvent?: string`, `newestEvent?: string`, per-space breakdown
+- [x] Define `ImportReport` — `importedEvents: number`, `skippedDuplicates: number`, `errors: ImportError[]`
+- [x] Define `EventLogConfig` — `databaseName` (string, default "event-log"), `schemaVersion` (number), `maxEventsPerQuery` (number, default 1000), `snapshotInterval` (number, default 100 — create snapshot every N events per space), `hashAlgorithm` ('SHA-256')
+- [x] Define `EventLog` interface — all 10 methods with full signatures: `writeEvent`, `queryBySpace`, `queryByType`, `queryByTime`, `reconstructState`, `verifyIntegrity`, `createSnapshot`, `getStorageUsage`, `exportArchive`, `importArchive`
+- [x] Define `EventLogError` discriminated union — `INTEGRITY_VIOLATION`, `STORAGE_FULL`, `INVALID_QUERY`, `INVALID_EVENT`, `SNAPSHOT_FAILED`, `IMPORT_FAILED`, `DATABASE_ERROR`
+- [x] Define `Result<T, E>` type — `{ ok: true; value: T } | { ok: false; error: E }`
+- [x] Write type-level tests — verify types compile correctly, verify discriminated unions narrow properly
+- [x] Export all types from `src/index.ts`
+- [x] Update `README.md` with full type documentation
 
 ### Done When
 
-- [ ] All public types are defined and exported
-- [ ] `npx tsc --noEmit` passes — types are valid TypeScript
-- [ ] Type tests verify discriminated union narrowing
-- [ ] `npx tsup` produces `.d.ts` files with all types
-- [ ] README documents every public type
+- [x] All public types are defined and exported
+- [x] `npx tsc --noEmit` passes — types are valid TypeScript
+- [x] Type tests verify discriminated union narrowing
+- [x] `npx tsup` produces `.d.ts` files with all types
+- [x] README documents every public type
 
 ---
 
-## M3: Event Storage & Hash Chain (Status: NOT STARTED)
+## M3: Event Storage & Hash Chain (Status: COMPLETE)
 
 **Goal**: Core write path — append events with SHA-256 hash chain integrity.
 
@@ -87,18 +87,18 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 
 ### Tasks
 
-- [ ] Install `dexie` (IndexedDB wrapper)
-- [ ] Create `src/storage/database.ts` — Dexie database setup with schema:
+- [x] Install `dexie` (IndexedDB wrapper)
+- [x] Create `src/storage/database.ts` — Dexie database setup with schema:
     - `events` table: keyPath `id`, indexes on `spaceId`, `type`, `timestamp`, `sequenceNumber`
     - `snapshots` table: keyPath `id`, indexes on `spaceId`, `eventSequenceNumber`
     - `metadata` table: keyPath `key` (sequence counters, schema version, storage stats)
-- [ ] Create `src/hash-chain/hash.ts` — SHA-256 hash computation using Web Crypto API (`crypto.subtle.digest`)
+- [x] Create `src/hash-chain/hash.ts` — SHA-256 hash computation using Web Crypto API (`crypto.subtle.digest`)
     - `computeEventHash(event: Omit<Event, 'hash'>): Promise<string>` — deterministic serialization → SHA-256 → hex string
     - Deterministic serialization: sort keys alphabetically, stable JSON stringify
-- [ ] Create `src/hash-chain/chain.ts` — hash chain linking logic
+- [x] Create `src/hash-chain/chain.ts` — hash chain linking logic
     - Get `previousHash` from the last event for a space (or null for genesis)
     - Verify chain link before write — `previousHash` must match last event's `hash`
-- [ ] Create `src/storage/event-writer.ts` — `writeEvent` implementation
+- [x] Create `src/storage/event-writer.ts` — `writeEvent` implementation
     - Validate event fields (non-empty spaceId, valid type, non-empty payload)
     - Generate UUID v4 for `id`
     - Set `timestamp` to caller-injected time (NOT `Date.now()`)
@@ -106,7 +106,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
     - Compute hash chain (`previousHash` from last event, then compute `hash`)
     - Write to IndexedDB in a single Dexie transaction (atomicity)
     - Return the complete `Event` on success, `EventLogError` on failure
-- [ ] Create `src/storage/event-writer.test.ts` — unit tests:
+- [x] Create `src/storage/event-writer.test.ts` — unit tests:
     - Writes first event with `previousHash: null`
     - Writes second event with correct `previousHash` linking to first
     - Writes 100 events and verifies chain integrity
@@ -114,29 +114,29 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
     - Rejects event with invalid `type`
     - Handles concurrent writes to the same space (serialized via Dexie transaction)
     - Handles concurrent writes to different spaces (independent chains)
-- [ ] Create `src/hash-chain/hash.test.ts` — unit tests:
+- [x] Create `src/hash-chain/hash.test.ts` — unit tests:
     - Deterministic: same input → same hash
     - Different input → different hash
     - Serialization is key-order independent
     - Empty payload hashes correctly
     - Large payload (100KB) hashes within performance target
-- [ ] Create `src/hash-chain/chain.test.ts` — unit tests:
+- [x] Create `src/hash-chain/chain.test.ts` — unit tests:
     - Genesis event has null previousHash
     - Chain links are correct across 10 events
     - Detects tampered event (modified payload, hash mismatch)
     - Detects missing event in chain
-- [ ] Wire `writeEvent` into the `EventLog` factory function in `src/event-log.ts`
-- [ ] Export factory function `createEventLog(config: EventLogConfig): EventLog` from `src/index.ts`
+- [x] Wire `writeEvent` into the `EventLog` factory function in `src/event-log.ts`
+- [x] Export factory function `createEventLog(config: EventLogConfig): EventLog` from `src/index.ts`
 
 ### Done When
 
-- [ ] `writeEvent` appends events with correct hash chain
-- [ ] SHA-256 hash computed via Web Crypto API
-- [ ] Hash chain is verified on every write
-- [ ] Events are written atomically (Dexie transaction)
-- [ ] All unit tests pass
-- [ ] `npx tsc --noEmit` passes
-- [ ] Coverage ≥ 90% for hash chain and event writer modules
+- [x] `writeEvent` appends events with correct hash chain
+- [x] SHA-256 hash computed via Web Crypto API
+- [x] Hash chain is verified on every write
+- [x] Events are written atomically (Dexie transaction)
+- [x] All unit tests pass
+- [x] `npx tsc --noEmit` passes
+- [x] Coverage ≥ 90% for hash chain and event writer modules
 
 ---
 

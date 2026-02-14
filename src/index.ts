@@ -35,3 +35,9 @@ export {
   importFailed,
   databaseError,
 } from './errors.js';
+
+// Factory
+export { createEventLog } from './event-log.js';
+
+// Writer input type
+export type { WriteEventInput } from './storage/event-writer.js';
