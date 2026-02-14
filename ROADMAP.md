@@ -543,7 +543,7 @@ Deep analysis of the codebase against the original specification identified:
 
 ### Documentation
 
-- [x] Create `docs/reference.md` — complete API reference (25 types, 11 methods, 7 error codes)
+- [x] Create `docs/reference.md` — complete API reference (26 types, 11 methods, 7 error codes)
 - [x] Create `docs/architecture.md` — module dependencies, storage schema, write/query/snapshot paths
 - [x] Create `docs/hash-chain.md` — deterministic serialization, chain rules, tamper detection examples
 - [x] Create `docs/storage-format.md` — `.rblogs` binary format byte-level specification

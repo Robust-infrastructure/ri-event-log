@@ -103,6 +103,13 @@ const log2 = createEventLog({
     return { count: s.count + 1, lastType: event.type };
   },
 });
+
+// Deterministic mode — inject a custom ID generator for reproducible outputs
+let counter = 0;
+const log3 = createEventLog({
+  databaseName: 'deterministic-log',
+  idGenerator: () => `evt-${String(++counter)}`,
+});
 ```
 
 ## API Surface
@@ -134,15 +141,44 @@ interface EventLog {
 | `Snapshot` | Compacted state at a point in the event chain |
 | `IntegrityReport` | Hash chain verification result |
 | `StorageReport` | Storage utilization with per-space breakdown |
+| `SpaceStorageInfo` | Per-space storage info used in `StorageReport.spaces` |
+| `StoragePressureLevel` | One of 5 pressure levels: `NORMAL` through `BLOCKED` |
+| `StoragePressureReport` | Result of `getStoragePressure()` with level and recommendation |
 | `ImportReport` | Archive import result with success/skip/error counts |
+| `ImportError` | Per-event error detail in `ImportReport.errors` |
 | `AstDiffOperation` | A single AST diff operation (add/modify/remove at a path) |
+| `DiffOperationType` | `'add' \| 'modify' \| 'remove'` — AST diff operation kind |
+| `ScopeMetadata` | Changed-node counts and affected functions for diff events |
 | `DiffPayload` | Structured payload for `space_evolved` events with AST diffs |
 | `SpaceCreatedPayload` | Structured payload for `space_created` genesis events |
+| `SpaceForkedPayload` | Structured payload for `space_forked` events |
 | `ReconstructedSource` | Result of source reconstruction from diffs |
 | `CompactionReport` | Result of snapshot-based compaction |
+| `WriteEventInput` | Input type for `writeEvent` (event fields minus computed ones) |
 | `EventLogConfig` | Configuration: database name, snapshot interval, state reducer, ID generator |
 | `EventLogError` | Discriminated union of 7 error types |
+| `EventLogErrorCode` | Union of 7 string literal error codes for discriminating errors |
 | `Result<T, E>` | `{ ok: true; value: T } \| { ok: false; error: E }` |
+| `EventLog` | The primary interface with all 11 methods |
+
+## Standalone Functions
+
+These functions are exported directly — they do not require an `EventLog` instance.
+
+| Function | Description |
+|----------|-------------|
+| `createEventLog(config?)` | Factory function — creates an `EventLog` instance |
+| `getStoragePressure(report, availableBytes)` | Pure function — computes storage pressure level from a `StorageReport` |
+| `writeDiffEvent(db, spaceId, timestamp, astDiff, scopeMetadata, sourceHash)` | Write a `space_evolved` event with structured diff payload |
+| `writeGenesisEvent(db, spaceId, timestamp, source, sourceHash, compiledWasmHash)` | Write a `space_created` genesis event |
+| `reconstructSource(db, spaceId, atTimestamp?)` | Reconstruct source from genesis + diff chain |
+| `integrityViolation(eventId, expected, actual)` | Create an `INTEGRITY_VIOLATION` error |
+| `storageFull(usedBytes, maxBytes)` | Create a `STORAGE_FULL` error |
+| `invalidQuery(field, reason)` | Create an `INVALID_QUERY` error |
+| `invalidEvent(field, reason)` | Create an `INVALID_EVENT` error |
+| `snapshotFailed(spaceId, reason)` | Create a `SNAPSHOT_FAILED` error |
+| `importFailed(reason, eventId?)` | Create an `IMPORT_FAILED` error |
+| `databaseError(operation, reason)` | Create a `DATABASE_ERROR` error |
 
 ## Error Types
 
