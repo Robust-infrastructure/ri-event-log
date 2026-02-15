@@ -3,6 +3,7 @@
 Append-only immutable event log with hash chain integrity, temporal queries, and tiered storage.
 
 [![npm version](https://img.shields.io/npm/v/ri-event-log.svg)](https://www.npmjs.com/package/ri-event-log)
+[![CI](https://github.com/Robust-infrastructure/ri-event-log/actions/workflows/ci.yml/badge.svg)](https://github.com/Robust-infrastructure/ri-event-log/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Status
