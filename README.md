@@ -168,7 +168,7 @@ These functions are exported directly — they do not require an `EventLog` inst
 | Function | Description |
 |----------|-------------|
 | `createEventLog(config?)` | Factory function — creates an `EventLog` instance |
-| `getStoragePressure(report, availableBytes)` | Pure function — computes storage pressure level from a `StorageReport` |
+| `getStoragePressure(report, availableBytes)` | Pure function — returns `StoragePressureReport` (level, usageRatio, recommendation) from a `StorageReport` |
 | `writeDiffEvent(db, spaceId, timestamp, astDiff, scopeMetadata, sourceHash)` | Write a `space_evolved` event with structured diff payload |
 | `writeGenesisEvent(db, spaceId, timestamp, source, sourceHash, compiledWasmHash)` | Write a `space_created` genesis event |
 | `reconstructSource(db, spaceId, atTimestamp?)` | Reconstruct source from genesis + diff chain |

@@ -62,7 +62,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 - [x] Define `StorageReport` — `totalEvents: number`, `totalSnapshots: number`, `estimatedBytes: number`, `oldestEvent?: string`, `newestEvent?: string`, per-space breakdown
 - [x] Define `ImportReport` — `importedEvents: number`, `skippedDuplicates: number`, `errors: ImportError[]`
 - [x] Define `EventLogConfig` — `databaseName` (string, default "event-log"), `schemaVersion` (number), `maxEventsPerQuery` (number, default 1000), `snapshotInterval` (number, default 100 — create snapshot every N events per space), `hashAlgorithm` ('SHA-256')
-- [x] Define `EventLog` interface — all 10 methods with full signatures: `writeEvent`, `queryBySpace`, `queryByType`, `queryByTime`, `reconstructState`, `verifyIntegrity`, `createSnapshot`, `getStorageUsage`, `exportArchive`, `importArchive`
+- [x] Define `EventLog` interface — initial 10 methods with full signatures: `writeEvent`, `queryBySpace`, `queryByType`, `queryByTime`, `reconstructState`, `verifyIntegrity`, `createSnapshot`, `getStorageUsage`, `exportArchive`, `importArchive` (11th method `compact` added in M7/Post-M10)
 - [x] Define `EventLogError` discriminated union — `INTEGRITY_VIOLATION`, `STORAGE_FULL`, `INVALID_QUERY`, `INVALID_EVENT`, `SNAPSHOT_FAILED`, `IMPORT_FAILED`, `DATABASE_ERROR`
 - [x] Define `Result<T, E>` type — `{ ok: true; value: T } | { ok: false; error: E }`
 - [x] Write type-level tests — verify types compile correctly, verify discriminated unions narrow properly
@@ -290,7 +290,8 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
         - Per-space breakdown: `{ spaceId, eventCount, estimatedBytes }`
     - `estimatedBytes`: sum of serialized event sizes (JSON.stringify length as byte estimate)
 - [x] Create `src/storage/pressure.ts` — storage pressure levels
-    - `getStoragePressure(report: StorageReport, availableBytes: number): StoragePressureLevel`
+    - `getStoragePressure(report: StorageReport, availableBytes: number): StoragePressureReport`
+    - Returns `StoragePressureReport` with `level: StoragePressureLevel`, `usageRatio: number`, and `recommendation: string`
     - Levels:
         - `NORMAL` (< 50%): no action
         - `COMPACT` (50–70%): return recommendation to compact
@@ -301,8 +302,7 @@ Append-only immutable event log with hash chain integrity, temporal queries, and
 - [x] Create `src/storage/compaction.ts` — background compaction
     - `compact(spaceId)`:
         1. Create a snapshot at the latest event
-        2. Mark old events as "compacted" (don't delete — append-only)
-        3. Return compaction report: events compacted, bytes saved (estimated)
+        2. Return `CompactionReport`: `spaceId`, `eventsCompacted`, `estimatedBytesSaved`, `snapshotId`
     - Note: compaction doesn't delete events (append-only guarantee). It creates snapshots so reconstruction doesn't need to replay from genesis.
 - [x] Create `src/storage/budget.test.ts` — unit tests:
     - Empty database: zero events, zero bytes

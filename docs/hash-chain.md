@@ -86,13 +86,12 @@ On every `writeEvent` call, the library reads the latest event for the space and
 
 `verifyIntegrity(spaceId?)` walks the hash chain and checks every link:
 
-1. Load all events for the scope (single space or entire database), ordered by `[spaceId, sequenceNumber]`
-2. Group events by space
-3. For each space, iterate sequentially:
+1. If `spaceId` is provided, verify that single space. Otherwise, collect all distinct spaceIds and verify each independently.
+2. For each space, load events in chunks of 500 (ordered by `sequenceNumber`):
    - First event: verify `previousHash === null`
    - Subsequent events: verify `previousHash === predecessor.hash`
    - Every event: recompute hash from fields and verify it matches `event.hash`
-4. Report the first broken link (if any)
+3. Report the first broken link (if any)
 
 ### IntegrityReport
 
