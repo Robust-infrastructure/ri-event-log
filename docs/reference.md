@@ -466,4 +466,16 @@ All fields are optional with sensible defaults.
 
 ---
 
+## §14 Non-Goals
+
+These are explicitly **not** the responsibility of this library:
+
+- **Event semantics** — the library stores events but does not interpret what they mean. The caller defines event types and payloads.
+- **Offline orchestration** — Service Workers, intent queuing, and background sync are the caller's responsibility.
+- **Archival policy** — when to archive old events (e.g., 90-day threshold) is a caller decision. This library provides `exportEvents()`/`importEvents()` mechanics only.
+- **UI rendering** — timeline views, event browsers, and any visual representation are outside scope.
+- **Cross-device sync** — the library is local-only in Phase 0. Multi-device sync is deferred to Phase 1+.
+
+---
+
 *Last verified: 14 February 2026 against source code.*
