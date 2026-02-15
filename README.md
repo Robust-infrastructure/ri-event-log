@@ -2,6 +2,9 @@
 
 Append-only immutable event log with hash chain integrity, temporal queries, and tiered storage.
 
+[![npm version](https://img.shields.io/npm/v/ri-event-log.svg)](https://www.npmjs.com/package/ri-event-log)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Status
 
 **v1.0.0 — Production Ready**
